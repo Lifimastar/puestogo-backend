@@ -76,3 +76,13 @@ async def create_order(order_data: OrderCreate, session: AsyncSession = Depends(
     await session.refresh(new_order)
     
     return {"order_id": new_order.id, "total": new_order.total, "status": new_order.status}
+
+@app.get("/products/trending")
+async def get_trending_products(limit: int = 5, session: AsyncSession = Depends(get_session)):
+    """
+    Devuelve una lista de productos 'en tendencia'.
+    Por ahora, simplemente selecciona los primeros 'limit' productos de la base de datos.
+    En el futuro, esto podría basarse en un campo 'popularity' o en ventas recientes.
+    """
+    result = await session.execute(select(Product).limit(limit))
+    return result.scalars().all()
